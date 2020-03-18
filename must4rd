@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+
+# create multi-master (ha) k3s cluster
+# using k3sup
+
+function usage  {
+    echo $0 'is a wrapper around k3sup, intending to help setup a k3s cluster with'
+    echo '    arbitrary size of nodes, with a single command.'
+    echo usage: $0 '[-u username] [-m max_masters] [-c context] [-k ssh_key] [-x k3sup_xtra_args] server1 [server2] [server...]'
+    echo '    where username is used for authentication into the servers'
+    echo '    where max_masters is set to 3 by default; further nodes are just workers'
+    echo '    example:' $0 '192.168.64.10 192.168.64.11 192.168.64.12'
+    echo '    example:' $0 '-u ubuntu servername1 servername2 servername3'
+    echo '    example:' $0 '-u ubuntu -m 1 192.168.64.10 192.168.64.11 192.168.64.12'
+    echo '    example:' $0 '-c k3sdev -k ~/.ssh/my_key -x "--merge --ssh-port 2222" 192.168.64.10'
+    exit 1
+}
+
+function fail () { echo FAILED ; exit ; }
+
+K3SUP=$(which k3sup)
+KUBECTL=$(which kubectl)
+
+test -n "${K3SUP}" && test -n "${KUBECTL}" || { echo both k3sup and kubectl are required ; fail ; }
+
+while getopts ":h-hu:m:x:fc:k:" opt ; do
+    case $opt in
+        c) CONTEXT="$OPTARG" ;;
+        k) SSHKEY="--ssh-key $OPTARG" ;;
+        x) XARGS="$OPTARG" ;;
+        f) FORCE="YES" ;;
+        u) USERNAME="$OPTARG" ;;
+        m) declare -i MAXSERVERS=$OPTARG ;;
+        h|-h) usage ;;
+        \?) echo invalid optin: -$OPTARG ;;
+        :) echo invalid option: -$OPTARG requires an argument ; usage ;;
+    esac
+done
+shift $(($OPTIND -1))
+NODES="$@"
+XARGS="$XARGS $SSHKEY"
+
+test -n "$USERNAME"   || USERNAME="ubuntu" && echo "USERNAME   : $USERNAME"
+test -n "$MAXSERVERS" || MAXSERVERS=3      && echo "MAXSERVERS : $MAXSERVERS"
+test -n "$NODES"      || usage             && echo "NODES      : $NODES"
+test -n "$CONTEXT"    || CONTEXT="default" && echo "CONTEXT    : $CONTEXT"
+                                              echo "k3sup      : $K3SUP"
+                                              echo "kubectl    : $KUBECTL"
+test -n "$XARGS"                           && echo "Extra Args : $XARGS"
+
+K3SUP="${K3SUP} ${XARGS}"
+
+declare -i NN=0
+
+for NODE in $NODES ; do
+    if [  $NN -eq 0 ] ; then
+        MASTER=$NODE
+    elif [ $NN -lt $MAXSERVERS ] ; then
+        SERVERS="$SERVERS $NODE"
+    else WORKERS="$WORKERS $NODE"
+    fi
+    let NN=$NN+1
+done
+
+echo "MASTER     : $MASTER"
+echo "SERVERS    : $SERVERS"
+echo "WORKERS    : $WORKERS"
+
+case "$FORCE" in
+    YES) ;;
+    *)
+        echo 'If this looks good, pass "-f" to actually execute.'
+        exit
+        ;;
+esac
+
+# init cluster with first node
+echo create cluster with first server node: $MASTER
+k3sup install \
+  --context $CONTEXT \
+  $XARGS \
+  --ip $MASTER \
+  --user $USERNAME \
+  --cluster \
+  || fail
+
+# join any remaining servers to the cluster
+for SERVER in $SERVERS ; do
+    echo join cluster with next server node: $SERVER
+    k3sup join \
+      $XARGS \
+      --ip $SERVER \
+      --user $USERNAME \
+      --server-user $USERNAME \
+      --server-ip $MASTER \
+      --server \
+  || fail
+done
+
+# join any remaining workers to the cluster
+for WORKER in $WORKERS ; do
+    echo join cluster with next worker node: $WORKER
+    k3sup join \
+      $XARGS \
+      --ip $WORKER \
+      --user $USERNAME \
+      --server-user $USERNAME \
+      --server-ip $MASTER \
+  || fail
+done
+
+echo checking NODES
+sleep 5
+kubectl --kubeconfig=kubeconfig get nodes
