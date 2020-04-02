@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# create multi-master (ha) k3s cluster
-# using k3sup
+# create multi-master (ha) k3s cluster using k3sup
+# 2020 dewey.hylton@gmail.com
 
 function usage  {
     echo $0 'is a wrapper around k3sup, intending to help setup a k3s cluster with'
