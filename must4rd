@@ -21,8 +21,6 @@ function fail () { echo FAILED ; exit ; }
 K3SUP=$(which k3sup)
 KUBECTL=$(which kubectl)
 
-test -n "${K3SUP}" && test -n "${KUBECTL}" || { echo both k3sup and kubectl are required ; fail ; }
-
 while getopts ":h-hu:m:x:fc:k:" opt ; do
     case $opt in
         c) CONTEXT="$OPTARG" ;;
@@ -36,6 +34,9 @@ while getopts ":h-hu:m:x:fc:k:" opt ; do
         :) echo invalid option: -$OPTARG requires an argument ; usage ;;
     esac
 done
+
+test -n "${K3SUP}" && test -n "${KUBECTL}" || { echo both k3sup and kubectl are required ; fail ; }
+
 shift $(($OPTIND -1))
 NODES="$@"
 XARGS="$XARGS $SSHKEY"
