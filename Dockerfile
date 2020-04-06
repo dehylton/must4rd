@@ -1,7 +1,9 @@
 FROM alpine:3.11
 
+COPY must4rd /usr/local/bin/must4rd
+
 RUN apk add --no-cache bash curl openssh keychain sudo openssl ncurses \
-  && mv must4rd /usr/local/bin/must4rd && chmod +x /usr/local/bin/must4rd \
+  && chmod +x /usr/local/bin/must4rd \
   && curl -sLS https://get.k3sup.dev | sh \
   && curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl \
   && chmod +x ./kubectl \
