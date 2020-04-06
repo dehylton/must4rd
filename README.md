@@ -4,7 +4,7 @@
  * __k3sadm__: k3s/k8s admin environment
 
 ## must4rd
-`must4rd` is a wrapper around k3sup, intending to help setup a k3s cluster with
+__must4rd__ is a wrapper around k3sup, intending to help setup a k3s cluster with
     arbitrary size of nodes, with a single command.
 
 ```
@@ -18,12 +18,12 @@ usage: must4rd [-u username] [-m max_masters] [-c context] [-k ssh_key] [-x k3su
 ```
 
 ## k3sadm
-`k3sadm` is a docker container designed to be used for creation and administration
+__k3sadm__ is a docker container designed to be used for creation and administration
 of kubernetes clusters. Tools included in this tiny alpine-based container include:
- * must4rd
- * k3sup
- * kubectl
- * kubectx
- * kubens
- * arkade
- * helm 3
+  * must4rd
+  * k3sup
+  * kubectl
+  * kubectx
+  * kubens
+  * arkade
+  * helm 3
