@@ -1,0 +1,16 @@
+#!/bin/sh
+
+usage () {
+    echo usage: $0 host '[nickname]'
+    exit 1
+}
+
+test -n "${1}" || usage
+CHOST=${1}
+test -n "${2}" && CNAME=${2} || CNAME=${CHOST}
+
+mkdir -p ~/.kube/clusters
+
+ssh rancher@${CHOST} cat /etc/rancher/k3s/k3s.yaml \
+    | sed -e s/127.0.0.1/${CHOST}/g -e s/default/${CNAME}/g \
+    > ~/.kube/clusters/${CNAME}.yaml
