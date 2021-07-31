@@ -17,6 +17,8 @@ RUN apk add --no-cache bash curl openssh keychain sudo openssl ncurses \
   && mkdir -p /root/.ssh/ && ssh-keygen -f /root/.ssh/id_rsa -t ed25519 -N '' \
   && echo 'eval $(keychain --eval ~/.ssh/id_rsa)' >> /root/.bashrc \
   && echo 'alias kc=$(which kubectl)' >> /root/.bashrc \
+  && echo 'alias kx=$(which kubectx)' >> /root/.bashrc \
+  && echo 'alias kn=$(which kubens)' >> /root/.bashrc \
   && echo 'export PATH=/root/.arkade/bin:$PATH' >> /root/.bashrc \
   && rm -f /var/cache/apk/*
 
