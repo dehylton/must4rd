@@ -32,3 +32,37 @@ of kubernetes clusters. Tools included in this tiny alpine-based container inclu
  * kubens
  * arkade
  * helm 3
+ * ssh and keychain
+
+### Building and usage examples:
+```
+docker build -t k3sadm:local .
+docker run -it --rm k3sadm:local
+
+docker run -it --rm dhylton/k3sadm
+docker run -itd --name k3sadm dhylton/k3sadm
+docker run -itd --name k3sadm -v ~/.ssh:/myssh dhylton/k3sadm
+docker exec -it k3sadm keychain /myssh/id_rsa
+docker exec -it k3sadm bash
+```
+
+### Helper tools
+#### k3sadm-adopt
+Obtain kubeconf for a given cluster. This currently assumes k3os or very similar setup.
+
+```
+usage: k3sadm-adopt node [nickname]
+```
+
+#### k3sadm-merge
+Merge all adopted k8s clusters into their own contexts in ~/.kube/config
+
+```
+usage: k3sadm-merge
+```
+
+### Aliases
+ * kc : kubectl
+ * kx : kubectx
+ * kn : kubens
+
