@@ -1,7 +1,9 @@
 # Project: must4rd / k3sadm
 ## Description
  * __must4rd__: create multi-master (ha) k3s cluster using k3sup
- * __k3sadm__: k3s/k8s admin environment
+ * __k3sadm__: docker container: k3s/k8s admin environment
+ * __k3sadm-adopt__: obtain kubeconfig for a specific k3os host/cluster
+ * __k3sadm-merge__: merge adopted clusters into ~/.kube/config
 
 ## must4rd
 __must4rd__ is a wrapper around k3sup, intending to help setup a k3s cluster with
