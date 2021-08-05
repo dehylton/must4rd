@@ -1,8 +1,8 @@
 FROM alpine:latest
 
 COPY must4rd /usr/local/bin/must4rd
-COPY k3sadm-kubeconfig-merge /usr/local/bin/k3sadm-kubeconfig-merge
-COPY k3sadm-k3os-get-cluster /usr/local/bin/k3sadm-k3os-get-cluster
+COPY k3sadm-merge /usr/local/bin/k3sadm-merge
+COPY k3sadm-adopt /usr/local/bin/k3sadm-adopt
 
 RUN apk add --no-cache bash curl openssh keychain sudo openssl ncurses \
   && chmod +x /usr/local/bin/* \
