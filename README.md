@@ -52,6 +52,9 @@ Obtain kubeconf for a given cluster. This currently assumes k3os or very similar
 
 ```
 usage: k3sadm-adopt node [nickname]
+examples:
+    k3sadm-adopt 10.0.0.96
+    k3sadm-adopt 10.0.0.96 cluster1
 ```
 
 #### k3sadm-merge
