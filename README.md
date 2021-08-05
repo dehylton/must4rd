@@ -21,6 +21,8 @@ usage: must4rd [-u username] [-m max_masters] [-c context] [-k ssh_key] [-x k3su
 __k3sadm__ is a docker container designed to be used for creation and administration
 of kubernetes clusters. Tools included in this tiny alpine-based container include:
 
+ * k3sadm-adopt
+ * k3sadm-merge
  * must4rd
  * k3sup
  * kubectl
